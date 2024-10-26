@@ -10,22 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Setup SSH Key
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Configure Git
+      - name: Make a daily commit
         env:
           USER_NAME: ${{ secrets.USER_NAME }}
           USER_EMAIL: ${{ secrets.USER_EMAIL }}
         run: |
+          echo "$(date)" >> daily.txt
           git config user.name "${{ secrets.USER_NAME }}"
           git config user.email "${{ secrets.USER_EMAIL }}"
-
-      - name: Make a daily commit
-        run: |
-          echo "$(date)" >> daily.txt
           git add daily.txt
           git commit -m "Daily commit for $(date)"
           git push
